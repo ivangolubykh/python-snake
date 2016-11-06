@@ -52,6 +52,48 @@ class snake_body: # Двигать тело змеюки в текущую ст�
         self.body = []
         self.body.append(self.head.draw())
 
+        vals.root.bind('<d>',snake_body.right)
+        vals.root.bind('<D>',snake_body.right)
+        vals.root.bind('<Right>',snake_body.right)
+        vals.root.bind('<s>',snake_body.down)
+        vals.root.bind('<S>',snake_body.down)
+        vals.root.bind('<Down>',snake_body.down)
+        vals.root.bind('<a>',snake_body.left)
+        vals.root.bind('<A>',snake_body.left)
+        vals.root.bind('<Left>',snake_body.left)
+        vals.root.bind('<w>',snake_body.up)
+        vals.root.bind('<W>',snake_body.up)
+        vals.root.bind('<Up>',snake_body.up)
+
+        vals.root.bind('<q>',snake_body.quit)
+        vals.root.bind('<e>',snake_body.start)
+        vals.root.bind('<Destroy>',snake_body.quit)
+
+    def right(event):
+        vals.vector = CONST.RIGHT.value
+    def down(event):
+        vals.vector = CONST.DOWN.value
+    def left(event):
+        vals.vector = CONST.LEFT.value
+    def up(event):
+        vals.vector = CONST.UP.value
+
+    def quit(event):
+        vals.quit = 'y'
+
+    def start(event):
+        vals.quit = 'n'
+        global snake
+        i = 0
+        while i == 0:
+            vals.snake.step('del')
+            for x in range(0,20):
+                time.sleep(0.05)
+                vals.root.update()
+                if vals.quit == 'y':
+                    i = 1
+                    break
+
     def step(self, add):
         if vals.vector == CONST.RIGHT.value:
             deltax = CONST.SNAKE_THICKNESS.value
@@ -79,30 +121,7 @@ class snake_body: # Двигать тело змеюки в текущую ст�
 
 
 
-def right(event):
-    vals.vector = CONST.RIGHT.value
-def down(event):
-    vals.vector = CONST.DOWN.value
-def left(event):
-    vals.vector = CONST.LEFT.value
-def up(event):
-    vals.vector = CONST.UP.value
 
-def quit(event):
-    vals.quit = 'y'
-
-def start(event):
-    vals.quit = 'n'
-    global snake
-    i = 0
-    while i == 0:
-        vals.snake.step('del')
-        for x in range(0,20):
-            time.sleep(0.05)
-            vals.root.update()
-            if vals.quit == 'y':
-                i = 1
-                break
 
 
 def main():
@@ -113,22 +132,7 @@ def main():
     vals.canv = Canvas(width=740,height=470,bg=CONST.CANVAS_BGCOLOR.value)
     vals.canv.place(x=30, y=100)
 
-    vals.root.bind('<d>',right)
-    vals.root.bind('<D>',right)
-    vals.root.bind('<Right>',right)
-    vals.root.bind('<s>',down)
-    vals.root.bind('<S>',down)
-    vals.root.bind('<Down>',down)
-    vals.root.bind('<a>',left)
-    vals.root.bind('<A>',left)
-    vals.root.bind('<Left>',left)
-    vals.root.bind('<w>',up)
-    vals.root.bind('<W>',up)
-    vals.root.bind('<Up>',up)
 
-    vals.root.bind('<q>',quit)
-    vals.root.bind('<e>',start)
-    vals.root.bind('<Destroy>',quit)
 
     vals.snake = snake_body()
     vals.snake.step('add')
@@ -138,7 +142,7 @@ def main():
     vals.snake.step('add')
     vals.snake.step('add')
 
-    start(1)
+    snake_body.start(1)
 
 
 
