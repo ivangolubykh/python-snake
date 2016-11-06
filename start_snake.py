@@ -64,8 +64,8 @@ class element_square:
         self.object = self.canv.create_rectangle(x, y, x + self.d, y + self.d, fill=self.color, width=2)
 
 
-class draw_body:
-    def __init__(self, x, y, bloks, thickness, color, vector, canv):
+class snake_body:
+    def __init__(self, x, y, bloks, thickness, color, canv):
         self.x = x
         self.y = y
         self.bloks = bloks
@@ -73,21 +73,26 @@ class draw_body:
         self.color = color
         self.canv = canv
         self.body = []
-        for i in range(0,self.bloks):
-            if vector == 'x':
-                vektor_x = self.x + i * self.thickness
-                vector_y = self.y
-            else:
-                vektor_x = self.x
-                vector_y = self.y + i * self.thickness
-            self.body.append(element_square(vektor_x, vector_y, self.thickness, self.color, self.canv))
-        del vector
-
+        
     def draw(self):
         for i in range(0,len(self.body)):
             x = self.body[i].x - (self.thickness // 2) # координата левой грани квадрата
             y = self.body[i].y - (self.thickness // 2) # координата верхней грани квадрата
             self.body[i] = self.canv.create_rectangle(x, y, x + self.thickness, y + self.thickness, fill=self.color, width=2)
+
+
+class horiz_body(snake_body):
+    def __init__(self, x, y, bloks, thickness, color, canv):
+        super().__init__(x, y, bloks, thickness, color, canv)
+        for i in range(0,self.bloks):
+            self.body.append(element_square(self.x + i * self.thickness, self.y, self.thickness, self.color, self.canv))
+
+
+class vert_body(snake_body):
+    def __init__(self, x, y, bloks, thickness, color, canv):
+        super().__init__(x, y, bloks, thickness, color, canv)
+        for i in range(0,self.bloks):
+            self.body.append(element_square(self.x, self.y + i * self.thickness, self.thickness, self.color, self.canv))
 
 
 
@@ -107,10 +112,10 @@ def main():
 
 
 
-    hbody1 = draw_body(30, 200, 15, snake_thickness, snake_body_color, 'x', canv)
+    hbody1 = horiz_body(30, 200, 15, snake_thickness, snake_body_color, canv)
     hbody1.draw()
 
-    vbody1 = draw_body(330, 200, 15, snake_thickness, snake_body_color, 'y', canv)
+    vbody1 = vert_body(330, 200, 15, snake_thickness, snake_body_color, canv)
     vbody1.draw()
 
 
