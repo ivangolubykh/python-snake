@@ -22,7 +22,10 @@ class CONST(Enum): # Список возможных направлений дв
 
 class vals: # список изменяемых глобальных объектов/переменных
     vector = CONST.RIGHT.value # Текущее направление движения
+    quit = 'n'
     canv = 0
+    snake = 0
+    root = 0
 
 
 class element_square: # Рисую квадратик со стороной d и центром x,y
@@ -57,7 +60,7 @@ class snake_body: # Двигать тело змеюки в текущую ст�
             deltax = 0
             deltay = CONST.SNAKE_THICKNESS.value
         elif vals.vector == CONST.LEFT.value:
-            deltax = CONST.SNAKE_THICKNESS.value
+            deltax = -CONST.SNAKE_THICKNESS.value
             deltay = 0
         elif vals.vector == CONST.UP.value:
             deltax = 0
@@ -76,29 +79,71 @@ class snake_body: # Двигать тело змеюки в текущую ст�
 
 
 
+def right(event):
+    vals.vector = CONST.RIGHT.value
+def down(event):
+    vals.vector = CONST.DOWN.value
+def left(event):
+    vals.vector = CONST.LEFT.value
+def up(event):
+    vals.vector = CONST.UP.value
 
+def quit(event):
+    vals.quit = 'y'
+
+def start(event):
+    vals.quit = 'n'
+    global snake
+    i = 0
+    while i == 0:
+        vals.snake.step('del')
+        for x in range(0,20):
+            time.sleep(0.05)
+            vals.root.update()
+            if vals.quit == 'y':
+                i = 1
+                break
 
 
 def main():
-    root = Tk()
-    root.title('Программа Змейка на питоне в графике')
-    root.geometry('800x600+150+150')
+    vals.root = Tk()
+    vals.root.title('Программа Змейка на питоне в графике')
+    vals.root.geometry('800x600+150+150')
 
     vals.canv = Canvas(width=740,height=470,bg=CONST.CANVAS_BGCOLOR.value)
     vals.canv.place(x=30, y=100)
 
+    vals.root.bind('<d>',right)
+    vals.root.bind('<D>',right)
+    vals.root.bind('<Right>',right)
+    vals.root.bind('<s>',down)
+    vals.root.bind('<S>',down)
+    vals.root.bind('<Down>',down)
+    vals.root.bind('<a>',left)
+    vals.root.bind('<A>',left)
+    vals.root.bind('<Left>',left)
+    vals.root.bind('<w>',up)
+    vals.root.bind('<W>',up)
+    vals.root.bind('<Up>',up)
 
-    snake = snake_body()
-    snake.step('add')
-    snake.step('add')
-    snake.step('del')
-    snake.step('del')
-    snake.step('add')
-    snake.step('add')
+    vals.root.bind('<q>',quit)
+    vals.root.bind('<e>',start)
+    vals.root.bind('<Destroy>',quit)
+
+    vals.snake = snake_body()
+    vals.snake.step('add')
+    vals.snake.step('add')
+    vals.snake.step('del')
+    vals.snake.step('del')
+    vals.snake.step('add')
+    vals.snake.step('add')
+
+    start(1)
 
 
 
-    root.mainloop()
+    vals.root.mainloop()
+
 
 
 if __name__ == '__main__':
