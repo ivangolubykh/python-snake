@@ -49,21 +49,47 @@ CLASS:
 
 
 class element_square:
-    def __init__(self, x, y, d, canv):
+    def __init__(self, x, y, d, color, canv):
         self.x = x
         self.y = y
         self.d = d
+        self.color = color
         self.canv = canv
         if (self.d % 2) == 0:
             self.d +=1 # сторону квадрата делаю нечётной
+
     def draw(self):
-        self.x = self.x - (self.d // 2) # координата левой грани квадрата
-        self.y = self.y - (self.d // 2) # координата верхней грани квадрата
-        self.object = self.canv.create_rectangle(self.x, self.y, self.x + self.d, self.y + self.d, fill='red', width=2)
+        x = self.x - (self.d // 2) # координата левой грани квадрата
+        y = self.y - (self.d // 2) # координата верхней грани квадрата
+        self.object = self.canv.create_rectangle(x, y, x + self.d, y + self.d, fill=self.color, width=2)
+
+
+class horiz_body:
+    def __init__(self, x, y, bloks, thickness, color, canv):
+        self.x = x
+        self.y = y
+        self.bloks = bloks
+        self.thickness = thickness # толщина блока тела
+        self.color = color
+        self.canv = canv
+        self.body = []
+        for i in range(0,self.bloks):
+            self.body.append(element_square(self.x + i * self.thickness, self.y, self.thickness, self.color, self.canv))
+
+
+    def draw(self):
+        for i in range(0,len(self.body)):
+            x = self.body[i].x - (self.thickness // 2) # координата левой грани квадрата
+            y = self.body[i].y - (self.thickness // 2) # координата верхней грани квадрата
+            self.body[i] = self.canv.create_rectangle(x, y, x + self.thickness, y + self.thickness, fill=self.color, width=2)
+
 
 
 def main():
-    canvasbgcolor='#bfcff1'
+    canvasbgcolor = '#bfcff1' # Цвет фона холста
+    snake_head_color = 'red' # Цвет головы змейки
+    snake_body_color = 'green' # Цвет тела змейки
+    snake_thickness = 10 # Толщина тела змейки
     root = Tk()
     root.title('Программа Змейка на питоне в графике')
     root.geometry('800x600+150+150')
@@ -72,8 +98,9 @@ def main():
     canv.place(x=30, y=100)
 
 
-    element_square1 = element_square(30, 150, 10, canv)
-    # element_square1.draw()
+
+    hbody1 = horiz_body(30, 200, 15, snake_thickness, snake_body_color, canv)
+    hbody1.draw()
 
 
 
