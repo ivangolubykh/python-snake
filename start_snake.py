@@ -56,9 +56,10 @@ class element_square:
         self.canv = canv
         if (self.d % 2) == 0:
             self.d +=1 # сторону квадрата делаю нечётной
+    def draw(self):
         self.x = self.x - (self.d // 2) # координата левой грани квадрата
         self.y = self.y - (self.d // 2) # координата верхней грани квадрата
-        self.object = canv.create_rectangle(self.x, self.y, self.x + self.d, self.y + self.d, fill='red', width=2)
+        self.object = self.canv.create_rectangle(self.x, self.y, self.x + self.d, self.y + self.d, fill='red', width=2)
 
 
 def main():
@@ -72,6 +73,7 @@ def main():
 
 
     element_square1 = element_square(30, 150, 10, canv)
+    # element_square1.draw()
 
 
 
