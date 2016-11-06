@@ -48,35 +48,35 @@ CLASS:
 '''
 
 
-def element_square(x, y, d, canv):
-    # координата центра квадрата и его сторона
-    if (d % 2) == 0:
-        d +=1 # сторону квадрата делаю нечётной
-    x = x - (d // 2) # координата левой грани квадрата
-    y = y - (d // 2) # координата верхней грани квадрата
-    rect = canv.create_rectangle(x, y, x+d, y+d, fill="red", width=2)
-    return rect
+class element_square:
+    def __init__(self, x, y, d, canv):
+        self.x = x
+        self.y = y
+        self.d = d
+        self.canv = canv
+        if (self.d % 2) == 0:
+            self.d +=1 # сторону квадрата делаю нечётной
+        self.x = self.x - (self.d // 2) # координата левой грани квадрата
+        self.y = self.y - (self.d // 2) # координата верхней грани квадрата
+        self.object = canv.create_rectangle(self.x, self.y, self.x + self.d, self.y + self.d, fill='red', width=2)
 
 
 def main():
+    canvasbgcolor='#bfcff1'
     root = Tk()
     root.title('Программа Змейка на питоне в графике')
     root.geometry('800x600+150+150')
 
-    canv = Canvas(width=740,height=470,bg='#bfcff1')
+    canv = Canvas(width=740,height=470,bg=canvasbgcolor)
     canv.place(x=30, y=100)
 
 
+    element_square1 = element_square(30, 150, 10, canv)
 
-    # turtle.onkey(pres_key_w,"w")
-    # turtle.listen()
 
-    element_square(10, 50, 15, canv)
+
 
     root.mainloop()
-
-
-
 
 
 if __name__ == '__main__':
