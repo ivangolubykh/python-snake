@@ -26,6 +26,7 @@ class python_snake: # Двигать тело змеюки в текущую с�
                              self.snake_y,
                              self.CONST.SNAKE_THICKNESS.value,
                              self.CONST.SNAKE_HCOLOR.value)
+        self.food.add(self)
         self.body = []
         self.body.append({'id': self.head.draw(),
                         'x': self.snake_x,
@@ -61,11 +62,14 @@ class python_snake: # Двигать тело змеюки в текущую с�
         SNAKE_HCOLOR = 'red' # Цвет головы змейки
         SNAKE_BCOLOR = 'green' # Цвет тела змейки
         CANVAS_BGCOLOR = '#bfcff1' # Цвет фона холста
-        SNAKE_THICKNESS = 10 # Толщина тела змейки
-        EXPLOSIVE = 15 # Диаметр взрыва при столкновении змеи с препятствием
-        EXPLOSIVE_BORD = 10 # толщитна контура взрыва при столкновении змеи с препятствием
+        SNAKE_THICKNESS = 11 # Толщина тела змейки (нечётное число)
+        FOOD_THICKNESS = 15 # Толщина еды (нечётное число)
+        FOOD_COLOR = '#aced95' # Цвет тела еды
+        EXPLOSIVE = 15 # Диаметр взрыва при столкновении змеи с препятствием (нечётное число)
+        EXPLOSIVE_BORD = 10 # толщина контура взрыва при столкновении змеи с препятствием
         EXPLOSIVE_BCOLOR = '#ff9999' # Цвет тела взрыва
         EXPLOSIVE_CCOLOR = '#881a1a' # Цвет контура взрыва
+
 
 
     # обработчики клавиш изменения направления движения:
@@ -88,8 +92,13 @@ class python_snake: # Двигать тело змеюки в текущую с�
     def start(self): # бесконечный цикл движения змейки
         self.quit = 'n'
         i = 0
+        add = 'del'
         while i == 0:
-            self.step('del')
+            self.step(add)
+            if self.food.eat(self) == 1:
+                add = 'add'
+            elif add == 'add':
+                add = 'del'
             if self.bump_wall() == 'the end':
                 break
             if self.bump_body() == 'the end':
@@ -101,7 +110,7 @@ class python_snake: # Двигать тело змеюки в текущую с�
                     i = 1
                     break
 
-    def bump_wall(self):
+    def bump_wall(self): # Проверка на столкновение со стеной
         head_x = self.body[-1]['x']
         head_y = self.body[-1]['y']
         if ( (head_x < ( (self.CONST.SNAKE_THICKNESS.value // 2) + 1 ) )
@@ -115,7 +124,7 @@ class python_snake: # Двигать тело змеюки в текущую с�
         else:
             return 0
 
-    def bump_body(self):
+    def bump_body(self): # Проверка на столкновение с телом змеи
         head_x = self.body[-1]['x']
         head_y = self.body[-1]['y']
         bump = 0
@@ -139,25 +148,6 @@ class python_snake: # Двигать тело змеюки в текущую с�
                                outline=self.CONST.EXPLOSIVE_CCOLOR.value,
                                width=self.CONST.EXPLOSIVE_BORD.value)
 
-
-    class element_square: # Рисую квадратик со стороной d и центром x,y
-        def __init__(self, self_glob, x, y, d, color):
-            self.self_glob = self_glob
-            self.x = x
-            self.y = y
-            self.d = d
-            self.color = color
-            if (self.d % 2) == 0:
-                self.d +=1 # сторону квадрата делаю нечётной
-
-        def draw(self):
-            x = self.x - (self.d // 2) # координата левой грани квадрата
-            y = self.y - (self.d // 2) # координата верхней грани квадрата
-            return self.self_glob.canv.create_rectangle(x, y, x + self.d,
-                                                       y + self.d,
-                                                       fill=self.color,
-                                                       width=2)
-
     def step(self, add): # Двигать тело змеюки в текущую сторону на 1 шаг
         # При этом тело может увеличиться (add='add') в размерах или нет
         if self.vector == self.CONST.RIGHT.value:
@@ -177,12 +167,68 @@ class python_snake: # Двигать тело змеюки в текущую с�
         self.head = self.element_square(self, self.head.x, self.head.y,
                              self.CONST.SNAKE_THICKNESS.value,
                              self.CONST.SNAKE_HCOLOR.value)
-        self.body.append({'id': self.head.draw(), 'x': self.head.x, 'y': self.head.y}) # Создал новую голову
+        self.body.append({'id': self.head.draw(), 'x': self.head.x, 
+                          'y': self.head.y}) # Создал новую голову
         self.canv.itemconfig(self.body[-2]['id'],
                              fill=self.CONST.SNAKE_BCOLOR.value) # Перекрасил старую голову в тело
         if add != 'add':
             self.canv.delete(self.body[0]['id'])
             self.body.pop(0)
+
+
+    class food:
+        def add(self):
+            self.food.x = random.randint(self.CONST.FOOD_THICKNESS.value
+                                     // 2, self.canv_width
+                                     - self.CONST.FOOD_THICKNESS.value // 2)
+            self.food.y = random.randint(self.CONST.FOOD_THICKNESS.value 
+                                     // 2, self.canv_height
+                                     - self.CONST.FOOD_THICKNESS.value // 2)
+            self.food.body = self.element_square(self, self.food.x,
+                                       self.food.y,
+                                       self.CONST.FOOD_THICKNESS.value,
+                                       self.CONST.FOOD_COLOR.value)
+            self.food.id = self.food.body.draw()
+
+        def eat(self):
+            head_x = self.body[-1]['x']
+            head_y = self.body[-1]['y']
+            eat = 0
+            if ( (head_x
+                     + self.CONST.SNAKE_THICKNESS.value // 2 > (self.food.x
+                                - self.CONST.FOOD_THICKNESS.value // 2) )
+                     and (head_x
+                     - self.CONST.SNAKE_THICKNESS.value // 2 < (self.food.x
+                                + self.CONST.FOOD_THICKNESS.value // 2) )
+                     and (head_y
+                     + self.CONST.SNAKE_THICKNESS.value // 2 > (self.food.y
+                                - self.CONST.FOOD_THICKNESS.value // 2) )
+                     and (head_y
+                     - self.CONST.SNAKE_THICKNESS.value // 2 < (self.food.y
+                                + self.CONST.FOOD_THICKNESS.value // 2) ) ):
+                self.canv.delete(self.food.id)
+                self.food.add(self)
+                eat = 1
+            return eat
+
+
+    class element_square: # Рисую квадратик со стороной d и центром x,y
+        def __init__(self, self_glob, x, y, d, color):
+            self.self_glob = self_glob
+            self.x = x
+            self.y = y
+            self.d = d
+            self.color = color
+            if (self.d % 2) == 0:
+                self.d +=1 # сторону квадрата делаю нечётной
+
+        def draw(self):
+            x = self.x - (self.d // 2) # координата левой грани квадрата
+            y = self.y - (self.d // 2) # координата верхней грани квадрата
+            return self.self_glob.canv.create_rectangle(x, y, x + self.d,
+                                                       y + self.d,
+                                                       fill=self.color,
+                                                       width=2)
 
 
 
@@ -194,10 +240,7 @@ def main():
     snake = python_snake(root, 30, 100, 740, 470)
     snake.start()
 
-
-
     root.mainloop()
-
 
 
 if __name__ == '__main__':
