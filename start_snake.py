@@ -25,7 +25,6 @@ class vals: # список изменяемых глобальных объек�
     quit = 'n'
     canv = 0
     snake = 0
-    root = 0
 
 
 class element_square: # Рисую квадратик со стороной d и центром x,y
@@ -45,7 +44,8 @@ class element_square: # Рисую квадратик со стороной d и
 
 class snake_body: # Двигать тело змеюки в текущую сторону на 1 шаг
 # При этом тело может увеличиться (add='add') в размерах или нет
-    def __init__(self):
+    def __init__(self, window):
+        self.window = window
         self.head = element_square(CONST.SNAKE_X.value, CONST.SNAKE_Y.value,
                              CONST.SNAKE_THICKNESS.value,
                              CONST.SNAKE_HCOLOR.value)
@@ -57,22 +57,22 @@ class snake_body: # Двигать тело змеюки в текущую ст�
         self.step('add')
         self.step('add')
 
-        vals.root.bind('<d>',snake_body.right)
-        vals.root.bind('<D>',snake_body.right)
-        vals.root.bind('<Right>',snake_body.right)
-        vals.root.bind('<s>',snake_body.down)
-        vals.root.bind('<S>',snake_body.down)
-        vals.root.bind('<Down>',snake_body.down)
-        vals.root.bind('<a>',snake_body.left)
-        vals.root.bind('<A>',snake_body.left)
-        vals.root.bind('<Left>',snake_body.left)
-        vals.root.bind('<w>',snake_body.up)
-        vals.root.bind('<W>',snake_body.up)
-        vals.root.bind('<Up>',snake_body.up)
+        self.window.bind('<d>',snake_body.right)
+        self.window.bind('<D>',snake_body.right)
+        self.window.bind('<Right>',snake_body.right)
+        self.window.bind('<s>',snake_body.down)
+        self.window.bind('<S>',snake_body.down)
+        self.window.bind('<Down>',snake_body.down)
+        self.window.bind('<a>',snake_body.left)
+        self.window.bind('<A>',snake_body.left)
+        self.window.bind('<Left>',snake_body.left)
+        self.window.bind('<w>',snake_body.up)
+        self.window.bind('<W>',snake_body.up)
+        self.window.bind('<Up>',snake_body.up)
 
-        vals.root.bind('<q>',snake_body.quit)
-        vals.root.bind('<e>',snake_body.start)
-        vals.root.bind('<Destroy>',snake_body.quit)
+        self.window.bind('<q>',self.quit)
+        self.window.bind('<e>',self.move)
+        self.window.bind('<Destroy>',self.quit)
 
     # обработчики клавиш изменения направления движения:
     def right(event):
@@ -84,18 +84,21 @@ class snake_body: # Двигать тело змеюки в текущую ст�
     def up(event):
         vals.vector = CONST.UP.value
 
-    def quit(event): # Возможность остановить змейку (пауза)
+    def quit(self, event): # Возможность остановить змейку (пауза)
         vals.quit = 'y'
 
-    def start(event): # бесконечный цикл движения змейки
+    def move(self, event):
+        if vals.quit != 'n':
+            self.start()
+
+    def start(self): # бесконечный цикл движения змейки
         vals.quit = 'n'
-        global snake
         i = 0
         while i == 0:
-            vals.snake.step('del')
+            self.step('del')
             for x in range(0,20):
                 time.sleep(0.05)
-                vals.root.update()
+                self.window.update()
                 if vals.quit == 'y':
                     i = 1
                     break
@@ -130,25 +133,22 @@ class snake_body: # Двигать тело змеюки в текущую ст�
 
 
 
-
 def main():
-    vals.root = Tk()
-    vals.root.title('Программа Змейка на питоне в графике')
-    vals.root.geometry('800x600+150+150')
+    root = Tk()
+    root.title('Программа Змейка на питоне в графике')
+    root.geometry('800x600+150+150')
 
     vals.canv = Canvas(width=740,height=470,bg=CONST.CANVAS_BGCOLOR.value)
     vals.canv.place(x=30, y=100)
 
 
 
-    vals.snake = snake_body()
-
-
+    vals.snake = snake_body(root)
     vals.snake.start()
 
 
 
-    vals.root.mainloop()
+    root.mainloop()
 
 
 
