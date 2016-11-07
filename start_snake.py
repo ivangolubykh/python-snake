@@ -50,7 +50,7 @@ class snake_body: # Двигать тело змеюки в текущую ст�
                              CONST.SNAKE_THICKNESS.value,
                              CONST.SNAKE_HCOLOR.value)
         self.body = []
-        self.body.append(self.head.draw())
+        self.body.append({'id': self.head.draw(), 'x': CONST.SNAKE_X.value, 'y': CONST.SNAKE_Y.value})
 
         vals.root.bind('<d>',snake_body.right)
         vals.root.bind('<D>',snake_body.right)
@@ -69,6 +69,7 @@ class snake_body: # Двигать тело змеюки в текущую ст�
         vals.root.bind('<e>',snake_body.start)
         vals.root.bind('<Destroy>',snake_body.quit)
 
+    # обработчики клавиш изменения направления движения:
     def right(event):
         vals.vector = CONST.RIGHT.value
     def down(event):
@@ -78,10 +79,10 @@ class snake_body: # Двигать тело змеюки в текущую ст�
     def up(event):
         vals.vector = CONST.UP.value
 
-    def quit(event):
+    def quit(event): # Возможность остановить змейку (пауза)
         vals.quit = 'y'
 
-    def start(event):
+    def start(event): # бесконечный цикл движения змейки
         vals.quit = 'n'
         global snake
         i = 0
@@ -94,7 +95,8 @@ class snake_body: # Двигать тело змеюки в текущую ст�
                     i = 1
                     break
 
-    def step(self, add):
+    def step(self, add): # Двигать тело змеюки в текущую сторону на 1 шаг
+        # При этом тело может увеличиться (add='add') в размерах или нет
         if vals.vector == CONST.RIGHT.value:
             deltax = CONST.SNAKE_THICKNESS.value
             deltay = 0
@@ -112,11 +114,11 @@ class snake_body: # Двигать тело змеюки в текущую ст�
         self.head = element_square(self.head.x, self.head.y,
                              CONST.SNAKE_THICKNESS.value,
                              CONST.SNAKE_HCOLOR.value)
-        self.body.append(self.head.draw()) # Создал новую голову
-        vals.canv.itemconfig(self.body[-2],
+        self.body.append({'id': self.head.draw(), 'x': self.head.x, 'y': self.head.y}) # Создал новую голову
+        vals.canv.itemconfig(self.body[-2]['id'],
                              fill=CONST.SNAKE_BCOLOR.value) # Перекрасил старую голову в тело
         if add != 'add':
-            vals.canv.delete(self.body[0])
+            vals.canv.delete(self.body[0]['id'])
             self.body.pop(0)
 
 
