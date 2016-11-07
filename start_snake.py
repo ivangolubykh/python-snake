@@ -50,7 +50,12 @@ class snake_body: # Двигать тело змеюки в текущую ст�
                              CONST.SNAKE_THICKNESS.value,
                              CONST.SNAKE_HCOLOR.value)
         self.body = []
-        self.body.append({'id': self.head.draw(), 'x': CONST.SNAKE_X.value, 'y': CONST.SNAKE_Y.value})
+        self.body.append({'id': self.head.draw(), 'x': CONST.SNAKE_X.value,
+                        'y': CONST.SNAKE_Y.value})
+        self.step('add')
+        self.step('add')
+        self.step('add')
+        self.step('add')
 
         vals.root.bind('<d>',snake_body.right)
         vals.root.bind('<D>',snake_body.right)
@@ -137,14 +142,9 @@ def main():
 
 
     vals.snake = snake_body()
-    vals.snake.step('add')
-    vals.snake.step('add')
-    vals.snake.step('del')
-    vals.snake.step('del')
-    vals.snake.step('add')
-    vals.snake.step('add')
 
-    snake_body.start(1)
+
+    vals.snake.start()
 
 
 
