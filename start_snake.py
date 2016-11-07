@@ -62,6 +62,10 @@ class python_snake: # Двигать тело змеюки в текущую с�
         SNAKE_BCOLOR = 'green' # Цвет тела змейки
         CANVAS_BGCOLOR = '#bfcff1' # Цвет фона холста
         SNAKE_THICKNESS = 10 # Толщина тела змейки
+        EXPLOSIVE = 15 # Диаметр взрыва при столкновении змеи с препятствием
+        EXPLOSIVE_BORD = 10 # толщитна контура взрыва при столкновении змеи с препятствием
+        EXPLOSIVE_BCOLOR = '#ff9999' # Цвет тела взрыва
+        EXPLOSIVE_CCOLOR = '#881a1a' # Цвет контура взрыва
 
 
     # обработчики клавиш изменения направления движения:
@@ -86,12 +90,54 @@ class python_snake: # Двигать тело змеюки в текущую с�
         i = 0
         while i == 0:
             self.step('del')
+            if self.bump_wall() == 'the end':
+                break
+            if self.bump_body() == 'the end':
+                break
             for x in range(0,20):
                 time.sleep(0.05)
                 self.window.update()
                 if self.quit == 'y':
                     i = 1
                     break
+
+    def bump_wall(self):
+        head_x = self.body[-1]['x']
+        head_y = self.body[-1]['y']
+        if ( (head_x < ( (self.CONST.SNAKE_THICKNESS.value // 2) + 1 ) )
+              or (head_y < ( (self.CONST.SNAKE_THICKNESS.value // 2) + 1 ) )
+              or (head_x > ( self.canv_width
+                         - (self.CONST.SNAKE_THICKNESS.value // 2) + 1 ) )
+              or (head_y > ( self.canv_height
+                         - (self.CONST.SNAKE_THICKNESS.value // 2) + 1 ) ) ):
+            self.explosive()
+            return 'the end'
+        else:
+            return 0
+
+    def bump_body(self):
+        head_x = self.body[-1]['x']
+        head_y = self.body[-1]['y']
+        bump = 0
+        for i in range(0, (len(self.body) - 1) ):
+            if ( (head_x == self.body[i]['x'])
+                  and (head_y == self.body[i]['y']) ):
+                self.explosive()
+                bump = 'the end'
+        return bump
+
+    def explosive(self):
+        self.canv.create_oval( (self.body[-1]['x'] 
+                               - self.CONST.EXPLOSIVE.value),
+                               (self.body[-1]['y'] 
+                               - self.CONST.EXPLOSIVE.value),
+                               (self.body[-1]['x'] 
+                               + self.CONST.EXPLOSIVE.value),
+                               (self.body[-1]['y'] 
+                               + self.CONST.EXPLOSIVE.value),
+                               fill=self.CONST.EXPLOSIVE_BCOLOR.value,
+                               outline=self.CONST.EXPLOSIVE_CCOLOR.value,
+                               width=self.CONST.EXPLOSIVE_BORD.value)
 
 
     class element_square: # Рисую квадратик со стороной d и центром x,y
@@ -107,7 +153,10 @@ class python_snake: # Двигать тело змеюки в текущую с�
         def draw(self):
             x = self.x - (self.d // 2) # координата левой грани квадрата
             y = self.y - (self.d // 2) # координата верхней грани квадрата
-            return self.self_glob.canv.create_rectangle(x, y, x + self.d, y + self.d, fill=self.color, width=2)
+            return self.self_glob.canv.create_rectangle(x, y, x + self.d,
+                                                       y + self.d,
+                                                       fill=self.color,
+                                                       width=2)
 
     def step(self, add): # Двигать тело змеюки в текущую сторону на 1 шаг
         # При этом тело может увеличиться (add='add') в размерах или нет
@@ -137,14 +186,12 @@ class python_snake: # Двигать тело змеюки в текущую с�
 
 
 
-
-
 def main():
     root = Tk()
     root.title('Программа Змейка на питоне в графике')
     root.geometry('800x600+150+150')
 
-    snake = python_snake(root, 30, 40, 740, 470)
+    snake = python_snake(root, 30, 100, 740, 470)
     snake.start()
 
 
