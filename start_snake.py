@@ -7,45 +7,29 @@ import time
 import random
 
 
-class element_square: # Рисую квадратик со стороной d и центром x,y
-    def __init__(self, self_glob, x, y, d, color):
-        self.self_glob = self_glob
-        self.x = x
-        self.y = y
-        self.d = d
-        self.color = color
-        if (self.d % 2) == 0:
-            self.d +=1 # сторону квадрата делаю нечётной
-
-    def draw(self):
-        x = self.x - (self.d // 2) # координата левой грани квадрата
-        y = self.y - (self.d // 2) # координата верхней грани квадрата
-        return self.self_glob.canv.create_rectangle(x, y, x + self.d, y + self.d, fill=self.color, width=2)
-
-
-class snake_body: # Двигать тело змеюки в текущую сторону на 1 шаг
+class python_snake: # Двигать тело змеюки в текущую сторону на 1 шаг
 # При этом тело может увеличиться (add='add') в размерах или нет
-    canv = 0
     def __init__(self, window, canv_x, canv_y, canv_width, canv_height):
         self.window = window
         self.canv_x = canv_x
         self.canv_y = canv_y
         self.canv_width = canv_width
         self.canv_height = canv_height
+        self.snake_x = self.canv_width // 2 # Координата старта змеи
+        self.snake_y = self.canv_height // 2 # Координата старта змеи
         self.vector = self.CONST.RIGHT.value
         self.canv = Canvas(self.window, width=self.canv_width,
                                 height=self.canv_height,
                                 bg=self.CONST.CANVAS_BGCOLOR.value)
         self.canv.place(x=self.canv_x, y=self.canv_y)
-
-        self.head = element_square(self, self.CONST.SNAKE_X.value,
-                             self.CONST.SNAKE_Y.value,
+        self.head = self.element_square(self, self.snake_x,
+                             self.snake_y,
                              self.CONST.SNAKE_THICKNESS.value,
                              self.CONST.SNAKE_HCOLOR.value)
         self.body = []
         self.body.append({'id': self.head.draw(),
-                        'x': self.CONST.SNAKE_X.value,
-                        'y': self.CONST.SNAKE_Y.value})
+                        'x': self.snake_x,
+                        'y': self.snake_y})
         self.step('add')
         self.step('add')
         self.step('add')
@@ -68,17 +52,17 @@ class snake_body: # Двигать тело змеюки в текущую ст�
         self.window.bind('<e>',self.move)
         self.window.bind('<Destroy>',self.quit)
 
+
     class CONST(Enum): # Список возможных направлений движения и других констант
         RIGHT = 1
         DOWN = 2
         LEFT = 3
         UP = 4
-        SNAKE_X = 370 # Координата старта змеи
-        SNAKE_Y = 235 # Координата старта змеи
         SNAKE_HCOLOR = 'red' # Цвет головы змейки
         SNAKE_BCOLOR = 'green' # Цвет тела змейки
         CANVAS_BGCOLOR = '#bfcff1' # Цвет фона холста
         SNAKE_THICKNESS = 10 # Толщина тела змейки
+
 
     # обработчики клавиш изменения направления движения:
     def right(self, event):
@@ -109,6 +93,22 @@ class snake_body: # Двигать тело змеюки в текущую ст�
                     i = 1
                     break
 
+
+    class element_square: # Рисую квадратик со стороной d и центром x,y
+        def __init__(self, self_glob, x, y, d, color):
+            self.self_glob = self_glob
+            self.x = x
+            self.y = y
+            self.d = d
+            self.color = color
+            if (self.d % 2) == 0:
+                self.d +=1 # сторону квадрата делаю нечётной
+
+        def draw(self):
+            x = self.x - (self.d // 2) # координата левой грани квадрата
+            y = self.y - (self.d // 2) # координата верхней грани квадрата
+            return self.self_glob.canv.create_rectangle(x, y, x + self.d, y + self.d, fill=self.color, width=2)
+
     def step(self, add): # Двигать тело змеюки в текущую сторону на 1 шаг
         # При этом тело может увеличиться (add='add') в размерах или нет
         if self.vector == self.CONST.RIGHT.value:
@@ -125,7 +125,7 @@ class snake_body: # Двигать тело змеюки в текущую ст�
             deltay = -self.CONST.SNAKE_THICKNESS.value
         self.head.x += deltax
         self.head.y += deltay
-        self.head = element_square(self, self.head.x, self.head.y,
+        self.head = self.element_square(self, self.head.x, self.head.y,
                              self.CONST.SNAKE_THICKNESS.value,
                              self.CONST.SNAKE_HCOLOR.value)
         self.body.append({'id': self.head.draw(), 'x': self.head.x, 'y': self.head.y}) # Создал новую голову
@@ -144,7 +144,7 @@ def main():
     root.title('Программа Змейка на питоне в графике')
     root.geometry('800x600+150+150')
 
-    snake = snake_body(root, 30, 40, 740, 470)
+    snake = python_snake(root, 30, 40, 740, 470)
     snake.start()
 
 
