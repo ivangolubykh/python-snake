@@ -1,21 +1,20 @@
 #!/usr/bin/python3
 # coding: utf-8
+'''
+ Игра разработана Голубых Иваном Борисовичем.
+ Официальный сайт игры:
+ https://github.com/ivangolubykh/python-snake
+'''
+
 
 from tkinter import *
 from enum import Enum
 import time
 import random
 
-
 class python_snake: # Двигать тело змеюки в текущую сторону на 1 шаг
 # При этом тело может увеличиться (add='add') в размерах или нет
     def __init__(self, window, canv_x, canv_y, canv_width, canv_height):
-    # Атрибут данных можно сделать приватным (private) — т.е. недоступным 
-    # снаружи — для этого слева нужно поставить два символа подчеркивания:
-    #   __private_attr = 10 
-    #   def __init__(self, count, str):
-    #      self.__private_attr = 20
-
         self.__started = 1
         self.__spped = 10
         self.__window = window
