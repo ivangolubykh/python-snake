@@ -16,6 +16,7 @@ class python_snake: # Двигать тело змеюки в текущую с�
     #   def __init__(self, count, str):
     #      self.__private_attr = 20
 
+        self.__spped = 10
         self.__window = window
         self.__canv_x = canv_x
         self.__canv_y = canv_y
@@ -55,10 +56,15 @@ class python_snake: # Двигать тело змеюки в текущую с�
         self.__window.bind('<W>',self.up)
         self.__window.bind('<Up>',self.up)
 
-        self.__window.bind('<q>',self.quit)
         self.__window.bind('<e>',self.move)
+        self.__window.bind('<q>',self.quit)
         self.__window.bind('<Destroy>',self.quit)
-
+        self.__window.bind('<plus>',self.speed_key)
+        self.__window.bind('<minus>',self.speed_key)
+        self.__window.bind('<KP_Add>',self.speed_key) # Клавиша + на боковой клаве
+        self.__window.bind('<KP_Subtract>',self.speed_key) # Клавиша - на боковой клаве
+        # self.__window.bind('<KeyPress>',self.speed_key) # print(event.keysym) Вычислит нажатую клавишу
+        
 
     class CONST(Enum): # Список возможных направлений движения и других констант
         RIGHT = 1
@@ -77,7 +83,6 @@ class python_snake: # Двигать тело змеюки в текущую с�
         EXPLOSIVE_CCOLOR = '#881a1a' # Цвет контура взрыва
 
 
-
     # обработчики клавиш изменения направления движения:
     def right(self, event):
         self.__vector = self.CONST.RIGHT.value
@@ -88,6 +93,21 @@ class python_snake: # Двигать тело змеюки в текущую с�
     def up(self, event):
         self.__vector = self.CONST.UP.value
 
+    def speed_key(self, event):
+        # print(event.keysym)
+        if event.keysym == 'KP_Add' or event.keysym == 'plus' :
+            self.speed('+')
+        elif event.keysym == 'KP_Subtract' or event.keysym == 'minus' :
+            self.speed('-')
+
+    def speed(self, way):
+        print('way=')
+        print(way)
+        if way == '+' and self.__spped > 1:
+            self.__spped -= 1
+        elif way == '-' and self.__spped < 20:
+            self.__spped += 1
+
     def quit(self, event): # Возможность остановить змейку (пауза)
         self.quit = 'y'
 
@@ -95,7 +115,7 @@ class python_snake: # Двигать тело змеюки в текущую с�
         if self.quit != 'n':
             self.start()
 
-    def start(self): # бесконечный цикл движения змейки
+    def start(self): # Бесконечный цикл движения змейки
         self.quit = 'n'
         i = 0
         add = 'del'
@@ -103,13 +123,14 @@ class python_snake: # Двигать тело змеюки в текущую с�
             self.step(add)
             if self.food.eat(self) == 1:
                 add = 'add'
+                self.speed('+')
             elif add == 'add':
                 add = 'del'
             if self.bump_wall() == 'the end':
                 break
             if self.bump_body() == 'the end':
                 break
-            for x in range(0,20):
+            for x in range(1, (self.__spped + 1) ):
                 time.sleep(0.05)
                 self.__window.update()
                 if self.quit == 'y':
